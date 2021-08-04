@@ -1,7 +1,6 @@
 package com.adaps.water.persistence.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Entity
@@ -11,7 +10,6 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotBlank
     private String name;
     private String lastname;
     private String ci;

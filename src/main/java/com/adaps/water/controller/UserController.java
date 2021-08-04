@@ -21,27 +21,31 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping(value = "")
-    public ResponseEntity<?> newUser(@RequestBody @Valid UserDto userDto, BindingResult result) throws Exception {
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto newUser(@Valid @RequestBody UserDto userDto) {
         return userService.create(userDto);
     }
 
     @GetMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getUser(@PathVariable Long id) throws NotFoundException {
         return userService.read(id);
     }
 
     @PutMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @PathVariable Long id) throws Exception {
         return userService.update(userDto, id);
     }
 
     @DeleteMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) throws NotFoundException {
         userService.delete(id);
     }
 
-    @GetMapping(value = "/list")
+    @GetMapping()
     public List<UserDto> getList() {
         return userService.list();
     }

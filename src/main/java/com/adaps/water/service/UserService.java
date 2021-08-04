@@ -1,6 +1,8 @@
 package com.adaps.water.service;
 
 import com.adaps.water.dto.UserDto;
+import com.adaps.water.exception.BadRequestExceptionHandler;
+import com.adaps.water.exception.NotFoundExceptionHandler;
 import com.adaps.water.mapper.UserMapper;
 import com.adaps.water.persistence.entity.UserEntity;
 import com.adaps.water.persistence.repository.UserRepository;
@@ -24,53 +26,40 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public ResponseEntity<?> create(UserDto userDto) throws Exception {
-        try {
-            UserEntity newUserEntity = userMapper.dtoToEntity(userDto);
-            return new ResponseEntity<>(userMapper.entityToDto(userRepository.save(newUserEntity)), HttpStatus.CREATED);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public UserDto create(UserDto userDto) {
+        UserEntity newUserEntity = userMapper.dtoToEntity(userDto);
+        return userMapper.entityToDto(userRepository.save(newUserEntity));
     }
 
-    public ResponseEntity<?> read(Long id) throws NotFoundException {
+    public ResponseEntity<?> read(Long id) {
         Optional<UserEntity> searchUserEntity = userRepository.findById(id);
-        if (searchUserEntity.isEmpty()) throw new NotFoundException("User with ID: " + id + " not found");
+        if (searchUserEntity.isEmpty()) throw new NotFoundExceptionHandler("USER with ID: " + id + " not found");
         return new ResponseEntity<>(userMapper.entityToDto(searchUserEntity.get()), HttpStatus.OK);
     }
 
     public ResponseEntity<?> update(UserDto userDto, Long id) throws Exception {
         Optional<UserEntity> userEntity = userRepository.findById(id);
-        if(userEntity.isEmpty()){
-            throw new NotFoundException("User with ID: "+id+" not found");
+        if (userEntity.isEmpty()) {
+            throw new NotFoundException("User with ID: " + id + " not found");
         }
 
-        UserEntity updateUserEntity     = new UserEntity();
-        try{
-            updateUserEntity.setId(id);
-            updateUserEntity.setName(userDto.getName());
-            updateUserEntity.setLastname(userDto.getLastname());
-            updateUserEntity.setCi(userDto.getCi());
-            updateUserEntity.setDateOfBirth(userDto.getDateOfBirth());
-            updateUserEntity.setAge(userDto.getAge());
-            userRepository.save(updateUserEntity);
-        }catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+        UserEntity updateUserEntity = new UserEntity();
+        updateUserEntity.setId(id);
+        updateUserEntity.setName(userDto.getName());
+        updateUserEntity.setLastname(userDto.getLastname());
+        updateUserEntity.setCi(userDto.getCi());
+        updateUserEntity.setDateOfBirth(userDto.getDateOfBirth());
+        updateUserEntity.setAge(userDto.getAge());
+        userRepository.save(updateUserEntity);
         return new ResponseEntity<>(userMapper.entityToDto(updateUserEntity), HttpStatus.OK);
     }
 
     public void delete(Long id) throws NotFoundException {
         Optional<UserEntity> deleteUserEntity = userRepository.findById(id);
-        if(deleteUserEntity.isEmpty()){
+        if (deleteUserEntity.isEmpty()) {
             throw new NotFoundException("User with ID: " + id + " not found");
         }
-        try {
-            userRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new NotFoundException("User with ID: " + id + " not found");
-        }
-        new ResponseEntity<>("User deleted", HttpStatus.NO_CONTENT);
+        userRepository.deleteById(id);
     }
 
     public List<UserDto> list() {

@@ -17,7 +17,8 @@ public class UserDto {
     private String ci;
     @NotNull
     private Date dateOfBirth;
-    @Age()
+    @NotNull()
+    @Age(message = "Enter value between 1 and 100")
     private int age;
 
     public Long getId() {
